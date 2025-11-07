@@ -1,5 +1,28 @@
 services:
   # ====================
+  # BACKEND SERVICES
+  # ====================
+
+  products-service:
+    build:
+      context: ../backend/products
+      dockerfile: Dockerfile
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-shop}:${POSTGRES_PASSWORD:-securepass123}@postgres:5432/${POSTGRES_DB:-shop}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - backend-net
+      - db-net
+
+
+  # ====================
   # DATABASES
   # ====================
   postgres:
