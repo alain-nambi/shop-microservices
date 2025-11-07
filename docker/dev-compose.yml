@@ -12,6 +12,9 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-shop}:${POSTGRES_PASSWORD:-securepass123}@postgres:5432/${POSTGRES_DB:-shop}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+    volumes:
+      - ../backend/products:/app
+    container_name: products-service
     ports:
       - "3000:3000"
     depends_on:
