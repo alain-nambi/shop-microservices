@@ -1,0 +1,20 @@
+# Bun
+node_modules/
+dist/
+.bun/
+
+# Docker
+.env
+*.log
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+secrets/
+
+# Build artifacts
+build/
+.DS_Store
