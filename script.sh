@@ -3,7 +3,7 @@ cp .env.example .env
 
 # 2. Start services
 cd docker
-docker compose -f dev-compose.yml up --build
+docker compose -f dev-compose.yml up --build -d
 
 # 3. Verify all services are running
 docker compose -f dev-compose.yml ps
