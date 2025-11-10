@@ -1,79 +1,40 @@
 import { Hono } from "hono";
 import { Redis } from "ioredis";
 import { db } from "./db/client";
-import { products } from "./db/products/schema";
-import { eq } from "drizzle-orm";
-import { getAllProducts } from "./controllers/product_controller";
 import productRoute from "./routes/product_route";
+
+/**
+ * Products Service - Main Application Entry Point
+ * This service handles product management operations including
+ * creating products and retrieving product lists with caching
+ */
 
 const app = new Hono();
 
-// --- Redis Client ---
+// --- Redis Client Configuration ---
 export const redis = new Redis({
   host: process.env.REDIS_HOST || "127.0.0.1",
   port: parseInt(process.env.REDIS_PORT || "6379"),
   lazyConnect: true,
 });
 
-// Gracefully handle Redis connection errors
+// Handle Redis connection events
 redis.on("error", (err) => console.error("❌ Redis error:", err));
 redis.on("connect", () => console.log("✅ Connected to Redis"));
 
-// --- Health Check ---
+// --- Health Check Endpoint ---
 app.get("/health", (c) => c.json({ status: "ok" }));
 
-// --- Route API for Products ---
+// --- Product API Routes ---
 app.route("/api/v1/products", productRoute);
 
-// // --- Create a new product ---
-// app.post("/products", async (c) => {
-//   const { id, name, price, category, description } = await c.req.json();
-
-//   // Basic validation
-//   if (!name || !price || !description) {
-//     return c.json({ error: "Name, price, and description are required" }, 400);
-//   }
-
-//   // Insert into DB
-//   const [newProduct] = await db
-//     .insert(products)
-//     .values({ id, name, price, description, category })
-//     .returning();
-
-//   // Invalidate cache so next read refreshes data
-//   await redis.del("products:all");
-
-//   console.log("🆕 Product created and cache invalidated");
-
-//   return c.json({ message: "Product created", product: newProduct });
-// });
-
-// // --- Get single product (with per-item cache) ---
-// app.get("/products/:id", async (c) => {
-//   const id = parseInt(c.req.param("id"));
-//   const cacheKey = `product:${id}`;
-
-//   const cached = await redis.get(cacheKey);
-//   if (cached) {
-//     console.log(`⚡ Product ${id} served from cache`);
-//     return c.json(JSON.parse(cached));
-//   }
-
-//   const [product] = await db.select().from(products).where(eq(products.id, id));
-
-//   if (!product) return c.json({ error: "Product not found" }, 404);
-
-//   // Cache individual product for 5 minutes
-//   await redis.set(cacheKey, JSON.stringify(product), "EX", 300);
-
-//   console.log(`💾 Cached product ${id} in Redis`);
-//   return c.json(product);
-// });
+// --- Server Startup ---
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4001;
 
 console.log("🚀 Products service is starting...");
-console.log(`🔧 Listening on port ${process.env.PORT || 4001}`);
+console.log(`🔧 Listening on port ${PORT}`);
 
 export default {
-  port: process.env.PORT ? parseInt(process.env.PORT) : 4001,
+  port: PORT,
   fetch: app.fetch,
-}
+};
