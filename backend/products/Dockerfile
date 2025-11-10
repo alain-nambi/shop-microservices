@@ -1,4 +1,4 @@
-FROM oven/bun:latest as builder
+FROM oven/bun:latest
 
 WORKDIR /app
 COPY package*.json ./
@@ -13,6 +13,6 @@ COPY . .
 # COPY --from=builder /app/dist ./dist
 # COPY --from=builder /app/package.json ./
 
-EXPOSE 3000
+EXPOSE 4001
 
 CMD [ "bun", "run", "dev" ]

@@ -7,16 +7,13 @@ services:
     build:
       context: ../backend/products
       dockerfile: Dockerfile
-    environment:
-      PORT: 3000
-      DATABASE_URL: postgres://${POSTGRES_USER:-shop}:${POSTGRES_PASSWORD:-securepass123}@postgres:5432/${POSTGRES_DB:-shop}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+    env_file:
+      - ../backend/products/.env
     volumes:
       - ../backend/products:/app
     container_name: products-service
     ports:
-      - "3000:3000"
+      - "4001:4001"
     depends_on:
       - postgres
       - redis

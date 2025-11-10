@@ -22,7 +22,7 @@ redis.on("connect", () => console.log("✅ Connected to Redis"));
 // --- Health Check ---
 app.get("/health", (c) => c.json({ status: "ok" }));
 
-// --- Get all products with caching ---
+// --- Route API for Products ---
 app.route("/api/v1/products", productRoute);
 
 // // --- Create a new product ---
@@ -70,4 +70,10 @@ app.route("/api/v1/products", productRoute);
 //   return c.json(product);
 // });
 
-export default app;
+console.log("🚀 Products service is starting...");
+console.log(`🔧 Listening on port ${process.env.PORT || 4001}`);
+
+export default {
+  port: process.env.PORT ? parseInt(process.env.PORT) : 4001,
+  fetch: app.fetch,
+}
